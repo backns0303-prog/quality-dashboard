@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026년 품질실적 대시보드</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #fff;
+      --text: #243041;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --blue: #2563eb;
+      --green: #10b981;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --dark: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      color: var(--text);
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #1d4ed8 58%, #38bdf8);
+      color: #fff;
+      padding: 50px 24px 66px;
+      text-align: center;
+    }
+    .hero .badge {
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 42px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+    .hero p {
+      margin: 14px 0 0;
+      font-size: 17px;
+      opacity: 0.92;
+    }
+    .meta {
+      margin-top: 22px;
+      font-size: 14px;
+      opacity: 0.82;
+    }
+    .wrap {
+      max-width: 1220px;
+      margin: -42px auto 70px;
+      padding: 0 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+    }
+    section { margin-bottom: 28px; }
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      margin: 0 0 14px;
+    }
+    .section-title h2 {
+      margin: 0;
+      color: var(--dark);
+      font-size: 24px;
+    }
+    .section-title span {
+      font-size: 13px;
+      color: var(--blue);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+    }
+    .kpi {
+      grid-column: span 3;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi::before {
+      content: "";
+      position: absolute;
+      right: -34px;
+      top: -34px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.09);
+    }
+    .label {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .value {
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--dark);
+      margin-top: 8px;
+    }
+    .sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .up { color: var(--red); font-weight: 900; }
+    .down { color: var(--green); font-weight: 900; }
+    .blue { border-top: 5px solid var(--blue); }
+    .red { border-top: 5px solid var(--red); }
+    .orange { border-top: 5px solid var(--orange); }
+    .green { border-top: 5px solid var(--green); }
+    .full { grid-column: span 12; }
+    .half { grid-column: span 6; }
+    .wide { grid-column: span 8; }
+    .side { grid-column: span 4; }
+    canvas {
+      width: 100% !important;
+      height: 300px !important;
+      min-height: 300px;
+    }
+    .mini canvas {
+      height: 255px !important;
+      min-height: 255px;
+    }
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .filters label {
+      font-weight: 900;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filters select {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: white;
+      font-weight: 800;
+    }
+    .filters button {
+      border: 0;
+      background: var(--blue);
+      color: white;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .filter-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-left: auto;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .summary div {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .summary b {
+      display: block;
+      color: var(--dark);
+      font-size: 20px;
+      margin-top: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      color: var(--dark);
+      font-weight: 900;
+    }
+    tr:hover td { background: #f9fafb; }
+    .right { text-align: right; }
+    .center { text-align: center; }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .toolbar button {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 900;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .toolbar button.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .tag.bad { background: #fee2e2; color: #b91c1c; }
+    .tag.warn { background: #fef3c7; color: #b45309; }
+    .tag.good { background: #dcfce7; color: #047857; }
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modal-card {
+      background: white;
+      border-radius: 24px;
+      width: min(720px, 96vw);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+    }
+    .modal-head {
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: white;
+      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .close {
+      border: 0;
+      background: rgba(255, 255, 255, 0.16);
+      color: white;
+      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .modal-body { padding: 22px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .detail-item {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 14px;
+    }
+    .detail-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .detail-item b {
+      display: block;
+      color: var(--dark);
+      font-size: 20px;
+      margin-top: 4px;
+    }
+    .modal-tip {
+      margin-top: 16px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      border-radius: 14px;
+      padding: 14px;
+      line-height: 1.55;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px 0 45px;
+    }
+    @media (max-width: 900px) {
+      .kpi, .half, .wide, .side { grid-column: span 12; }
+      .summary { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 31px; }
+      .filter-note { margin-left: 0; }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="badge">QUALITY KPI DASHBOARD</div>
+    <h1>2026년 품질실적 현황<br />관리 대시보드</h1>
+    <p>26년 품질지표 현황.xlsx + 공정부적합 보고서_3월.xlsx 기준 / 2026년 1~3월 실적 반영</p>
+    <div class="meta">고객클레임 · PPM · 브랜드별 · 공장별 · 공정부적합 · 폐기금액</div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <div class="section-title"><h2>조회 조건</h2><span>FILTER</span></div>
+      <div class="card full">
+        <div class="filters">
+          <label style="cursor: pointer;">
+            📂 엑셀 업로드
+            <input type="file" id="excelUpload" accept=".xlsx,.xls" style="display: none;" />
+          </label>
+          <label>년도 <select id="yearFilter"><option value="2026" selected>2026년</option><option value="2025">2025년</option></select></label>
+          <label>월 <select id="monthFilter"><option value="all" selected>전체</option><option value="1">1월</option><option value="2">2월</option><option value="3">3월</option></select></label>
+          <button id="resetBtn">초기화</button>
+          <span class="filter-note">DATA 테이블 행 또는 그래프를 더블클릭하면 상세 팝업이 열립니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card kpi blue"><div class="label">선택 기준 출고량</div><div class="value" id="kpiShip">0</div><div class="sub">선택 월 기준</div></div>
+      <div class="card kpi red"><div class="label">고객클레임</div><div class="value" id="kpiClaim">0건</div><div class="sub" id="kpiClaimSub">전년 대비</div></div>
+      <div class="card kpi orange"><div class="label">전체 PPM</div><div class="value" id="kpiPpm">0</div><div class="sub">클레임 / 출고량 × 1,000,000</div></div>
+      <div class="card kpi green"><div class="label">공정부적합 폐기금액</div><div class="value" id="kpiNoncon">0</div><div class="sub" id="kpiNonconSub">단위: 백만 원</div></div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>품질실적 핵심 요약</h2><span>SUMMARY</span></div>
+      <div class="card full"><div class="summary" id="summaryBox"></div></div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>월별 고객클레임 및 PPM</h2><span>MONTHLY TREND</span></div>
+      <div class="grid">
+        <div class="card half"><h3>고객클레임 건수 비교</h3><canvas id="claimChart"></canvas></div>
+        <div class="card half"><h3>전체 PPM 추이</h3><canvas id="ppmChart"></canvas></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>브랜드별 품질 현황</h2><span>BRAND</span></div>
+      <div class="grid">
+        <div class="card half"><h3>브랜드별 클레임 건수</h3><canvas id="brandChart"></canvas></div>
+        <div class="card half"><h3>브랜드별 PPM</h3><canvas id="brandPpmChart"></canvas></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>공장/외주 품질 현황</h2><span>PROCESS</span></div>
+      <div class="grid">
+        <div class="card wide"><h3>구분별 클레임 건수</h3><canvas id="factoryChart"></canvas></div>
+        <div class="card side mini"><h3>구성 비중</h3><canvas id="factoryPie"></canvas></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>공정부적합 현황</h2><span>NONCONFORMITY</span></div>
+      <div class="grid">
+        <div class="card half"><h3>월별 폐기금액 비교</h3><canvas id="nonconCostChart"></canvas></div>
+        <div class="card half"><h3>월별 부적합률 추이</h3><canvas id="nonconRateChart"></canvas></div>
+        <div class="card half"><h3>부적합 유형별 누계 TOP6</h3><canvas id="nonconTypeChart"></canvas></div>
+        <div class="card half"><h3>공장/구분별 폐기금액</h3><canvas id="nonconFactoryChart"></canvas></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>부적합 상세 데이터</h2><span>NONCONFORMITY DATA</span></div>
+      <div class="card full"><div id="nonconTableBox"></div></div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>상세 데이터 테이블</h2><span>DATA TABLE</span></div>
+      <div class="card full">
+        <div class="toolbar">
+          <button class="active" data-table="brand">브랜드별</button>
+          <button data-table="factory">공장/외주별</button>
+          <button data-table="monthly">월별 전체</button>
+        </div>
+        <div id="tableBox"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="detailModal">
+    <div class="modal-card">
+      <div class="modal-head"><h3 id="modalTitle">상세 정보</h3><button class="close" id="closeBtn">×</button></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <footer>Data Source: 26년 품질지표 현황.xlsx / 공정부적합 보고서_3월.xlsx</footer>
+
+  <script>
+    const months = ["1월", "2월", "3월"];
+    const defaultData = {
+      ship: [182683, 179090, 169494],
+      claim25: [111, 135, 214],
+      claim26: [158, 171, 193],
+      ppm25: [607.8, 753.7, 1262.5],
+      ppm26: [864.9, 954.8, 1138.7],
+      brand: [
+        { name: "퍼시스", y25: 56, m: [22, 28, 16], ship: [84751, 84534, 66208], ppm: [259.6, 331.2, 271.9] },
+        { name: "일룸", y25: 244, m: [69, 83, 74], ship: [41483, 37536, 42690], ppm: [1663.3, 2211.2, 1733.4] },
+        { name: "데스커", y25: 159, m: [67, 60, 103], ship: [56053, 56503, 59896], ppm: [1195.3, 1061.9, 1719.6] }
+      ],
+      factory: [
+        { name: "1공장", y25: 366, m: [129, 147, 155], ppm: [748.0, 864.5, 966.2] },
+        { name: "2공장", y25: 37, m: [13, 8, 5], ppm: [1764.4, 1326.7, 717.4] },
+        { name: "외주", y25: 64, m: [24, 22, 48], ppm: null }
+      ],
+      noncon: {
+        cost25: [15279, 14894, 14651],
+        rate25: [0.4439, 0.4321, 0.3835],
+        cost26: [30270, 34715, 33540],
+        rate26: [0.7201, 0.9088, 0.7613],
+        factory: [
+          { name: "1공장", m: [28953, 34170, 32200], total: 95323 },
+          { name: "2공장", m: [1317, 545, 1274], total: 3136 },
+          { name: "내부", m: [22074, 27300, 22839], total: 72213 },
+          { name: "자재", m: [8196, 7362, 10701], total: 26259 }
+        ],
+        types: [
+          { name: "원자재부적합", y25: 67598, m: [8196, 7362, 10701], total: 26259 },
+          { name: "쪽떨어짐", y25: 77600, m: [15002, 18946, 14122], total: 48070 },
+          { name: "스크래치/파손", y25: 35316, m: [3549, 4251, 4839], total: 12639 },
+          { name: "보링부적합", y25: 11307, m: [1786, 3176, 2367], total: 7329 },
+          { name: "엣지접착부적합", y25: 3043, m: [357, 10, 285], total: 652 },
+          { name: "재단부적합", y25: 1344, m: [206, 392, 338], total: 936 },
+          { name: "수량부족", y25: 3144, m: [83, 417, 249], total: 749 },
+          { name: "HPM접착부적합", y25: 213, m: [0, 0, 50], total: 50 },
+          { name: "2공장", y25: 7426, m: [1092, 161, 594], total: 1847 }
+        ]
+      }
+    };
+
+    let dashboardData = structuredClone(defaultData);
+    let charts = [];
+    let currentTable = "brand";
+
+    const fmt = (n) => Number(n || 0).toLocaleString("ko-KR");
+    const sum = (arr) => arr.reduce((acc, value) => acc + Number(value || 0), 0);
+    const rate = (current, base) => (base ? (((current - base) / base) * 100).toFixed(1) + "%" : "-");
+
+    function selectedYear() {
+      return document.getElementById("yearFilter").value;
+    }
+
+    function monthValue() {
+      return document.getElementById("monthFilter").value;
+    }
+
+    function idxs() {
+      const month = monthValue();
+      return month === "all" ? [0, 1, 2] : [Number(month) - 1];
+    }
+
+    function labels() {
+      return idxs().map((i) => months[i]);
+    }
+
+    function pick(arr) {
+      return idxs().map((i) => arr[i]);
+    }
+
+    function yearClaim() {
+      return selectedYear() === "2026" ? dashboardData.claim26 : dashboardData.claim25;
+    }
+
+    function brandVal(item) {
+      return selectedYear() === "2026" ? sum(pick(item.m)) : Math.round(item.y25 * (idxs().length / 3));
+    }
+
+    function factoryVal(item) {
+      return selectedYear() === "2026" ? sum(pick(item.m)) : Math.round(item.y25 * (idxs().length / 3));
+    }
+
+    const valueLabelPlugin = {
+      id: "valueLabelPlugin",
+      afterDatasetsDraw(chart) {
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.font = "bold 12px Arial";
+        ctx.fillStyle = "#0f172a";
+        ctx.textAlign = "center";
+
+        chart.data.datasets.forEach((dataset, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+          if (meta.hidden) {
+            return;
+          }
+
+          meta.data.forEach((element, index) => {
+            const value = dataset.data[index];
+            if (value === null || value === undefined) {
+              return;
+            }
+
+            if (chart.config.type === "doughnut") {
+              const pos = element.tooltipPosition();
+              const total = dataset.data.reduce((a, b) => a + Number(b || 0), 0);
+              const pct = total ? ((Number(value) / total) * 100).toFixed(1) : "0.0";
+              ctx.textBaseline = "middle";
+              ctx.fillText(Math.round(Number(value)).toLocaleString("ko-KR") + "건", pos.x, pos.y - 7);
+              ctx.fillText(pct + "%", pos.x, pos.y + 9);
+              return;
+            }
+
+            const pos = element.tooltipPosition();
+            const label = chart.canvas.id === "nonconRateChart"
+              ? Number(value).toFixed(1)
+              : Math.round(Number(value)).toLocaleString("ko-KR");
+
+            const textWidth = ctx.measureText(label).width;
+            const safeX = Math.max(textWidth / 2 + 6, Math.min(pos.x, chart.chartArea.right - textWidth / 2 - 6));
+            let offsetY = -10;
+            ctx.textBaseline = "bottom";
+
+            if (chart.config.type === "line") {
+              const otherIndex = datasetIndex === 0 ? 1 : 0;
+              const otherValue = chart.data.datasets[otherIndex] && chart.data.datasets[otherIndex].data[index];
+              if (otherValue !== undefined) {
+                if (Number(value) >= Number(otherValue)) {
+                  offsetY = -28;
+                  ctx.textBaseline = "bottom";
+                } else {
+                  offsetY = 18;
+                  ctx.textBaseline = "top";
+                }
+              } else {
+                offsetY = -20;
+              }
+            }
+
+            const safeY = Math.max(chart.chartArea.top + 22, Math.min(pos.y + offsetY, chart.chartArea.bottom - 10));
+            ctx.fillText(label, safeX, safeY);
+          });
+        });
+
+        ctx.restore();
+      }
+    };
+    Chart.register(valueLabelPlugin);
+
+    function commonOptions(kind) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 32, right: 44, left: 8, bottom: 8 } },
+        plugins: { legend: { position: "bottom" } },
+        scales: kind === "pie" ? {} : {
+          y: { beginAtZero: true, grid: { color: "#edf2f7" }, grace: "18%" },
+          x: { grid: { display: false } }
+        },
+        onHover: (event, elements) => {
+          event.native.target.style.cursor = elements.length ? "pointer" : "default";
+        }
+      };
+    }
+
+    function clearCharts() {
+      charts.forEach((chart) => chart.destroy());
+      charts = [];
+    }
+
+    function addChart(canvasId, config) {
+      const chart = new Chart(document.getElementById(canvasId), config);
+      chart.canvas.ondblclick = function (event) {
+        const points = chart.getElementsAtEventForMode(event, "nearest", { intersect: true }, true);
+        openChartPopup(chart, points);
+      };
+      charts.push(chart);
+    }
+
+    function renderAll() {
+      renderKpi();
+      renderSummary();
+      renderCharts();
+      renderTable();
+      renderNonconTable();
+    }
+
+    function renderKpi() {
+      const ship = sum(pick(dashboardData.ship));
+      const claim = sum(pick(yearClaim()));
+      const old = sum(pick(dashboardData.claim25));
+      const ppm = ship ? claim / ship * 1000000 : 0;
+      const nc = sum(pick(selectedYear() === "2026" ? dashboardData.noncon.cost26 : dashboardData.noncon.cost25));
+
+      document.getElementById("kpiShip").textContent = fmt(ship);
+      document.getElementById("kpiClaim").textContent = fmt(claim) + "건";
+      document.getElementById("kpiClaimSub").innerHTML = selectedYear() === "2026"
+        ? `전년 동기간 ${fmt(old)}건 대비 <span class="${claim >= old ? "up" : "down"}">${rate(claim, old)}</span>`
+        : "2025년 기준 조회";
+      document.getElementById("kpiPpm").textContent = Math.round(ppm).toLocaleString("ko-KR");
+      document.getElementById("kpiNoncon").textContent = fmt(nc);
+      document.getElementById("kpiNonconSub").textContent = "선택 조건 폐기금액 / 단위: 백만 원";
+    }
+
+    function renderSummary() {
+      const box = document.getElementById("summaryBox");
+      const nc = sum(pick(selectedYear() === "2026" ? dashboardData.noncon.cost26 : dashboardData.noncon.cost25));
+      box.innerHTML = dashboardData.brand.map((item) => {
+        const value = brandVal(item);
+        const sub = selectedYear() === "2026"
+          ? `전년 ${fmt(item.y25)}건 대비 ${rate(value, item.y25)}`
+          : "2025년 기준 조회";
+        return `<div>${item.name} 클레임<b>${fmt(value)}건</b><span class="sub">${sub}</span></div>`;
+      }).join("") + `<div>부적합 폐기금액<b>${fmt(nc)}</b><span class="sub">단위: 백만 원</span></div>`;
+    }
+
+    function renderCharts() {
+      clearCharts();
+      const labs = labels();
+
+      addChart("claimChart", {
+        type: "bar",
+        data: { labels: labs, datasets: [{ label: "2025년", data: pick(dashboardData.claim25) }, { label: "2026년", data: pick(dashboardData.claim26) }] },
+        options: commonOptions()
+      });
+
+      addChart("ppmChart", {
+        type: "line",
+        data: { labels: labs, datasets: [{ label: "2025년 PPM", data: pick(dashboardData.ppm25), tension: 0.35, fill: false }, { label: "2026년 PPM", data: pick(dashboardData.ppm26), tension: 0.35, fill: true }] },
+        options: commonOptions()
+      });
+
+      addChart("brandChart", {
+        type: "bar",
+        data: { labels: dashboardData.brand.map((item) => item.name), datasets: [{ label: selectedYear() + "년", data: dashboardData.brand.map(brandVal) }] },
+        options: commonOptions()
+      });
+
+      addChart("brandPpmChart", {
+        type: "bar",
+        data: {
+          labels: dashboardData.brand.map((item) => item.name),
+          datasets: idxs().map((i) => ({ label: months[i], data: dashboardData.brand.map((item) => item.ppm[i]) }))
+        },
+        options: commonOptions()
+      });
+
+      addChart("factoryChart", {
+        type: "bar",
+        data: {
+          labels: dashboardData.factory.map((item) => item.name),
+          datasets: [
+            { label: "2025년", data: dashboardData.factory.map((item) => item.y25) },
+            { label: "2026년", data: dashboardData.factory.map((item) => sum(pick(item.m))) }
+          ]
+        },
+        options: commonOptions()
+      });
+
+      addChart("factoryPie", {
+        type: "doughnut",
+        data: {
+          labels: dashboardData.factory.map((item) => item.name),
+          datasets: [{ label: selectedYear() + "년", data: dashboardData.factory.map(factoryVal) }]
+        },
+        options: commonOptions("pie")
+      });
+
+      addChart("nonconCostChart", {
+        type: "bar",
+        data: { labels: labs, datasets: [{ label: "2025년 폐기금액", data: pick(dashboardData.noncon.cost25) }, { label: "2026년 폐기금액", data: pick(dashboardData.noncon.cost26) }] },
+        options: commonOptions()
+      });
+
+      addChart("nonconRateChart", {
+        type: "line",
+        data: {
+          labels: labs,
+          datasets: [
+            { label: "2025년 부적합률(%)", data: pick(dashboardData.noncon.rate25), tension: 0.35, fill: false },
+            { label: "2026년 부적합률(%)", data: pick(dashboardData.noncon.rate26), tension: 0.35, fill: true }
+          ]
+        },
+        options: commonOptions()
+      });
+
+      const nonconTypes = dashboardData.noncon.types.slice().sort((a, b) => sum(pick(b.m)) - sum(pick(a.m))).slice(0, 6);
+      addChart("nonconTypeChart", {
+        type: "bar",
+        data: {
+          labels: nonconTypes.map((item) => item.name),
+          datasets: [
+            { label: "2025년 폐기금액", data: nonconTypes.map((item) => item.y25) },
+            { label: "2026년 폐기금액", data: nonconTypes.map((item) => sum(pick(item.m))) }
+          ]
+        },
+        options: commonOptions()
+      });
+
+      addChart("nonconFactoryChart", {
+        type: "bar",
+        data: {
+          labels: dashboardData.noncon.factory.map((item) => item.name),
+          datasets: [
+            { label: "2025년 폐기금액", data: dashboardData.noncon.factory.map((item) => item.total || 0) },
+            { label: "2026년 폐기금액", data: dashboardData.noncon.factory.map((item) => sum(pick(item.m))) }
+          ]
+        },
+        options: commonOptions()
+      });
+    }
+
+    function status(value) {
+      return value > 20 ? '<span class="tag bad">증가</span>' : value > 0 ? '<span class="tag warn">소폭증가</span>' : '<span class="tag good">감소</span>';
+    }
+
+    function renderTable() {
+      const box = document.getElementById("tableBox");
+
+      if (currentTable === "brand") {
+        box.innerHTML = '<table><thead><tr><th>브랜드</th><th class="right">전년</th><th class="right">선택년도</th><th class="right">증감률</th><th class="right">1월</th><th class="right">2월</th><th class="right">3월</th><th class="center">상태</th></tr></thead><tbody>' +
+          dashboardData.brand.map((item, index) => {
+            const value = brandVal(item);
+            return `<tr data-type="brand" data-i="${index}"><td>${item.name}</td><td class="right">${fmt(item.y25)}</td><td class="right">${fmt(value)}</td><td class="right">${rate(value, item.y25)}</td><td class="right">${item.m[0]}</td><td class="right">${item.m[1]}</td><td class="right">${item.m[2]}</td><td class="center">${status(((value - item.y25) / item.y25) * 100)}</td></tr>`;
+          }).join("") +
+          "</tbody></table>";
+      } else if (currentTable === "factory") {
+        box.innerHTML = '<table><thead><tr><th>구분</th><th class="right">전년</th><th class="right">선택년도</th><th class="right">증감률</th><th class="right">1월</th><th class="right">2월</th><th class="right">3월</th><th class="center">상태</th></tr></thead><tbody>' +
+          dashboardData.factory.map((item, index) => {
+            const value = factoryVal(item);
+            return `<tr data-type="factory" data-i="${index}"><td>${item.name}</td><td class="right">${fmt(item.y25)}</td><td class="right">${fmt(value)}</td><td class="right">${rate(value, item.y25)}</td><td class="right">${item.m[0]}</td><td class="right">${item.m[1]}</td><td class="right">${item.m[2]}</td><td class="center">${status(((value - item.y25) / item.y25) * 100)}</td></tr>`;
+          }).join("") +
+          "</tbody></table>";
+      } else {
+        box.innerHTML = '<table><thead><tr><th>월</th><th class="right">출고량</th><th class="right">2025년 클레임</th><th class="right">2026년 클레임</th><th class="right">증감</th><th class="right">PPM</th></tr></thead><tbody>' +
+          idxs().map((i) => `<tr data-type="month" data-i="${i}"><td>${months[i]}</td><td class="right">${fmt(dashboardData.ship[i])}</td><td class="right">${dashboardData.claim25[i]}</td><td class="right">${dashboardData.claim26[i]}</td><td class="right">${dashboardData.claim26[i] - dashboardData.claim25[i]}</td><td class="right">${Math.round(dashboardData.ppm26[i]).toLocaleString("ko-KR")}</td></tr>`).join("") +
+          "</tbody></table>";
+      }
+    }
+
+    function renderNonconTable() {
+      document.getElementById("nonconTableBox").innerHTML =
+        "<table><thead><tr>" +
+        "<th>부적합 유형</th>" +
+        '<th class="right">25년 합계</th>' +
+        '<th class="right">1월</th>' +
+        '<th class="right">2월</th>' +
+        '<th class="right">3월</th>' +
+        '<th class="right">25년 월평균</th>' +
+        '<th class="right">26년 월평균</th>' +
+        '<th class="right">목표 대비</th>' +
+        '<th class="right">선택월 합계</th>' +
+        '<th class="center">판정</th>' +
+        "</tr></thead><tbody>" +
+        dashboardData.noncon.types.map((item, index) => {
+          const value = sum(pick(item.m));
+          const avg25 = Math.round(item.y25 / 12);
+          const avg26 = Math.round(value / idxs().length);
+          const target = Math.round(avg25 * 0.9);
+          const gap = avg26 - target;
+          const diff = avg25 ? ((avg26 - avg25) / avg25) * 100 : 0;
+          const avgClass = diff > 0 ? "up" : "down";
+          const gapClass = gap > 0 ? "up" : "down";
+          let judge = '<span class="tag good">개선</span>';
+          if (diff > 10) {
+            judge = '<span class="tag bad">관리필요</span>';
+          } else if (diff > 0) {
+            judge = '<span class="tag warn">주의</span>';
+          }
+          return `<tr data-type="noncon" data-i="${index}">
+            <td>${item.name}</td>
+            <td class="right">${fmt(item.y25)}</td>
+            <td class="right">${fmt(item.m[0])}</td>
+            <td class="right">${fmt(item.m[1])}</td>
+            <td class="right">${fmt(item.m[2])}</td>
+            <td class="right">${fmt(avg25)}</td>
+            <td class="right ${avgClass}">${fmt(avg26)}</td>
+            <td class="right ${gapClass}">${gap > 0 ? "+" : ""}${fmt(gap)}</td>
+            <td class="right">${fmt(value)}</td>
+            <td class="center">${judge}</td>
+          </tr>`;
+        }).join("") +
+        "</tbody></table>";
+    }
+
+    function openChartPopup(chart, elements) {
+      if (!elements || !elements.length) {
+        return;
+      }
+
+      const element = elements[0];
+      const label = chart.data.labels[element.index];
+      const dataset = chart.data.datasets[element.datasetIndex];
+      const value = dataset.data[element.index];
+      const chartTitle = chart.canvas.closest(".card").querySelector("h3")?.textContent || "그래프 상세";
+      const displayValue = chart.canvas.id === "nonconRateChart"
+        ? Number(value).toFixed(1)
+        : Math.round(Number(value)).toLocaleString("ko-KR");
+
+      openModal(chartTitle + " 상세", [
+        { label: "구분", value: label },
+        { label: "항목", value: dataset.label || "값" },
+        { label: "값", value: displayValue },
+        { label: "조회년도", value: selectedYear() + "년" },
+        { label: "조회월", value: monthValue() === "all" ? "전체" : monthValue() + "월" },
+        { label: "그래프", value: chart.config.type }
+      ], "그래프 막대, 점, 원형 조각을 더블클릭하면 상세 정보가 열립니다.");
+    }
+
+    function openModal(title, items, tip) {
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").innerHTML =
+        '<div class="detail-grid">' +
+        items.map((item) => `<div class="detail-item"><span>${item.label}</span><b>${item.value}</b></div>`).join("") +
+        "</div>" +
+        (tip ? `<div class="modal-tip">${tip}</div>` : "");
+      document.getElementById("detailModal").classList.add("show");
+    }
+
+    function closeModal() {
+      document.getElementById("detailModal").classList.remove("show");
+    }
+
+    function openRow(type, index) {
+      if (type === "noncon") {
+        const item = dashboardData.noncon.types[index];
+        const value = sum(pick(item.m));
+        openModal(item.name + " 상세 현황", [
+          { label: "선택 합계", value: fmt(value) },
+          { label: "25년 합계", value: fmt(item.y25) },
+          { label: "전년 대비", value: rate(value, item.y25) },
+          { label: "월별", value: item.m.map((m) => fmt(m)).join(" / ") },
+          { label: "단위", value: "백만 원" },
+          { label: "구분", value: "공정부적합" }
+        ], "부적합 유형별 폐기금액 상세입니다.");
+        return;
+      }
+
+      if (type === "month") {
+        openModal(months[index] + " 전체 실적", [
+          { label: "출고량", value: fmt(dashboardData.ship[index]) },
+          { label: "2025년 클레임", value: dashboardData.claim25[index] + "건" },
+          { label: "2026년 클레임", value: dashboardData.claim26[index] + "건" },
+          { label: "증감", value: (dashboardData.claim26[index] - dashboardData.claim25[index]) + "건" },
+          { label: "PPM", value: Math.round(dashboardData.ppm26[index]).toLocaleString("ko-KR") },
+          { label: "부적합 폐기금액", value: fmt(dashboardData.noncon.cost26[index]) }
+        ], "선택 월 기준 상세 팝업입니다.");
+        return;
+      }
+
+      const item = (type === "brand" ? dashboardData.brand : dashboardData.factory)[index];
+      const value = type === "brand" ? brandVal(item) : factoryVal(item);
+      openModal(item.name + " 상세 현황", [
+        { label: "조회 기준", value: selectedYear() + "년 / " + (monthValue() === "all" ? "전체 월" : monthValue() + "월") },
+        { label: "클레임", value: fmt(value) + "건" },
+        { label: "전년 기준", value: fmt(item.y25) + "건" },
+        { label: "증감률", value: rate(value, item.y25) },
+        { label: "월별 발생", value: item.m.join("건 / ") + "건" },
+        { label: "PPM", value: item.ppm ? item.ppm.map((ppm) => Math.round(ppm).toLocaleString("ko-KR")).join(" / ") : "자료 없음" }
+      ], "더블클릭 상세 팝업입니다.");
+    }
+
+    function normalizeThreeMonths(values) {
+      return [0, 1, 2].map((index) => Number(values[index] || 0));
+    }
+
+    function updatePpmFromClaimsAndShip() {
+      dashboardData.ppm26 = dashboardData.claim26.map((claim, index) => {
+        const ship = Number(dashboardData.ship[index] || 0);
+        return ship ? Number(((Number(claim || 0) / ship) * 1000000).toFixed(1)) : 0;
+      });
+    }
+
+    function handleExcelUpload(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (loadEvent) {
+        const dataArray = new Uint8Array(loadEvent.target.result);
+        const workbook = XLSX.read(dataArray, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet);
+
+        if (!rows.length) {
+          alert("업로드한 시트에 데이터가 없습니다.");
+          return;
+        }
+
+        try {
+          dashboardData = structuredClone(defaultData);
+
+          const ship = rows.map((row) => row.출고량 ?? row.ship ?? row.Ship ?? 0).slice(0, 3);
+          const claim = rows.map((row) => row.클레임 ?? row.claim ?? row.Claim ?? 0).slice(0, 3);
+          const ppm = rows.map((row) => row.PPM ?? row.ppm ?? 0).slice(0, 3);
+
+          dashboardData.ship = normalizeThreeMonths(ship);
+          dashboardData.claim26 = normalizeThreeMonths(claim);
+          dashboardData.ppm26 = normalizeThreeMonths(ppm);
+
+          if (dashboardData.ppm26.every((value) => value === 0)) {
+            updatePpmFromClaimsAndShip();
+          }
+
+          renderAll();
+          alert("엑셀 데이터가 반영되었습니다. 필요하면 컬럼명을 현재 양식에 맞게 추가 매핑할 수 있습니다.");
+        } catch (error) {
+          console.error(error);
+          alert("엑셀 형식이 맞지 않습니다. 첫 시트에 출고량, 클레임, PPM 컬럼이 있는지 확인해주세요.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function resetDashboard() {
+      dashboardData = structuredClone(defaultData);
+      document.getElementById("yearFilter").value = "2026";
+      document.getElementById("monthFilter").value = "all";
+      document.getElementById("excelUpload").value = "";
+      renderAll();
+    }
+
+    document.getElementById("yearFilter").addEventListener("change", renderAll);
+    document.getElementById("monthFilter").addEventListener("change", renderAll);
+    document.getElementById("resetBtn").addEventListener("click", resetDashboard);
+    document.getElementById("excelUpload").addEventListener("change", handleExcelUpload);
+
+    document.querySelectorAll(".toolbar button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".toolbar button").forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+        currentTable = button.dataset.table;
+        renderTable();
+      });
+    });
+
+    document.getElementById("tableBox").addEventListener("dblclick", (event) => {
+      const row = event.target.closest("tr");
+      if (row && row.dataset.type) {
+        openRow(row.dataset.type, Number(row.dataset.i));
+      }
+    });
+
+    document.getElementById("nonconTableBox").addEventListener("dblclick", (event) => {
+      const row = event.target.closest("tr");
+      if (row && row.dataset.type) {
+        openRow(row.dataset.type, Number(row.dataset.i));
+      }
+    });
+
+    document.getElementById("closeBtn").addEventListener("click", closeModal);
+    document.getElementById("detailModal").addEventListener("dblclick", closeModal);
+
+    renderAll();
+  </script>
+</body>
+</html>
