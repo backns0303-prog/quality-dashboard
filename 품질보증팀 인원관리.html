@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>충주공장 품질보증팀 인원현황</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--card:#fff;--ink:#172033;--muted:#6b7280;--blue:#2563eb;--line:#e5e7eb;--shadow:0 18px 40px rgba(15,23,42,.10);--radius:22px}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f7fb;color:var(--ink)}
+    .wrap{max-width:1180px;margin:0 auto;padding:28px 18px 52px}.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a 55%,#2563eb);border-radius:28px;color:#fff;padding:34px;box-shadow:var(--shadow)}
+    .eyebrow{font-size:13px;letter-spacing:.22em;font-weight:800;opacity:.8}.hero h1{margin:8px 0;font-size:clamp(28px,4vw,46px);line-height:1.1;white-space:nowrap}.hero p{margin:0;color:#dbeafe}.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.pill{border-radius:999px;padding:8px 13px;font-size:13px;font-weight:750;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.20)}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.kpi,.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 24px rgba(15,23,42,.06)}.kpi{padding:20px}.kpi small{color:var(--muted);font-weight:800}.kpi b{display:block;font-size:32px;margin-top:6px}.kpi span,.sub{font-size:13px;color:var(--muted)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:18px 0;box-shadow:0 8px 24px rgba(15,23,42,.05)}input,select,button{border:1px solid var(--line);border-radius:14px;padding:11px 13px;font-size:14px;background:#fff}input{min-width:240px;flex:1}button{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:800;cursor:pointer}button.secondary{background:#fff;color:var(--ink)}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{padding:20px}.card h2{margin:0 0 8px;font-size:20px}.sub{margin-bottom:16px}
+    table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left}th{color:#475569;font-size:12px;background:#f8fafc}tbody tr:hover{background:#f8fbff}.mbti{font-weight:900;color:#1d4ed8;background:#eaf2ff;border-radius:999px;padding:5px 9px;display:inline-block;min-width:52px;text-align:center}.solar{font-size:12px;background:#ecfdf5;color:#047857;padding:4px 8px;border-radius:999px;font-weight:800}
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}.person{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 8px 20px rgba(15,23,42,.05)}.avatar{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:grid;place-items:center;color:#1d4ed8;font-weight:900;margin-bottom:12px}.person h3{margin:0;font-size:17px}.person p{margin:6px 0;color:var(--muted);font-size:13px}.tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.tag{border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:12px;background:#f8fafc;color:#475569;font-weight:700}.typebox{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.type{border-radius:18px;padding:14px;background:#f8fafc;border:1px solid var(--line)}.type b{display:block;font-size:22px}.type small{color:var(--muted);font-weight:750}.footer{margin-top:22px;text-align:center;color:#94a3b8;font-size:12px}
+    @media(max-width:900px){.hero h1{white-space:normal}.kpis,.cards{grid-template-columns:repeat(2,1fr)}.bottom-grid{grid-template-columns:1fr}.tablewrap{overflow-x:auto}}@media(max-width:560px){.kpis,.cards{grid-template-columns:1fr}input{min-width:100%}.toolbar>*{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero"><div class="eyebrow">EMPLOYEE REPORT</div><h1>충주공장 품질보증팀 인원현황</h1><p>팀 구성원의 MBTI, 생일, 입사일, 년차를 한 화면에서 확인합니다.</p><div class="meta"><span class="pill">총원 8명</span><span class="pill">MBTI 6종</span><span class="pill">년차 자동 산출</span></div></section>
+    <section class="kpis"><div class="kpi"><small>전체 인원</small><b id="kpiTotal">8</b><span>등록 직원 수</span></div><div class="kpi"><small>가장 많은 MBTI</small><b id="kpiTop">-</b><span id="kpiTopSub">-</span></div><div class="kpi"><small>2026년 입사자</small><b>1</b><span>신규 인원</span></div><div class="kpi"><small>생일 임박</small><b id="kpiBirthday">-</b><span id="kpiBirthdaySub">오늘 기준 가장 가까운 생일</span></div></section>
+    <section class="toolbar"><input id="search" placeholder="성명, MBTI, 생일, 입사일 검색"><select id="mbtiFilter"><option value="">전체 MBTI</option></select><button onclick="resetFilter()" class="secondary">초기화</button></section>
+    <section class="grid"><div class="card"><h2>직원 리스트</h2><div class="sub">엑셀 데이터 기준 직원별 MBTI 반영</div><div class="tablewrap"><table><thead><tr><th>순번</th><th>성명</th><th>MBTI</th><th>생일</th><th>양/음</th><th>입사일</th><th>년차</th></tr></thead><tbody id="tbody"></tbody></table></div></div></section>
+    <section class="bottom-grid"><div class="card"><h2>업무현황</h2><div class="sub">품질보증팀 주요 업무 진행 현황</div><div class="typebox"><div class="type"><small>수입검사</small><b>진행</b></div><div class="type"><small>공정품질</small><b>관리</b></div><div class="type"><small>고객클레임</small><b>대응</b></div><div class="type"><small>품질개선</small><b>추진</b></div></div><table style="margin-top:16px"><thead><tr><th>구분</th><th>담당 업무</th><th>상태</th></tr></thead><tbody><tr><td>QA</td><td>입고/출하 품질 관리</td><td><span class="solar">진행</span></td></tr><tr><td>CS</td><td>고객 클레임 분석</td><td><span class="solar">관리</span></td></tr><tr><td>개선</td><td>부적합 재발방지</td><td><span class="solar">추진</span></td></tr></tbody></table></div><div class="card"><h2>MBTI 분포</h2><div class="sub">동일 MBTI 인원 수 비교</div><canvas id="mbtiChart" height="220"></canvas><div class="typebox" id="typeSummary" style="margin-top:16px"></div></div></section>
+    <section class="cards" id="personCards"></section><div class="footer">PDM Dashboard Style · Employee Management</div>
+  </main>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const employees=[{no:1,name:'박혁',mbti:'INTJ',birthday:'12월 13일',solar:'양',join:'02.11.01'},{no:2,name:'민근후',mbti:'INFP',birthday:'3월 10일',solar:'양',join:'15.10.01'},{no:3,name:'김기원',mbti:'ISFP',birthday:'11월23일',solar:'양',join:'19.11.01'},{no:4,name:'백남수',mbti:'ENFP',birthday:'3월 3일',solar:'양',join:'22.11.28'},{no:5,name:'정일성',mbti:'ISTP',birthday:'6월 6일',solar:'양',join:'23.02.01'},{no:6,name:'배훈기',mbti:'INFP',birthday:'2월 6일',solar:'양',join:'25.07.14'},{no:7,name:'박태현',mbti:'INFP',birthday:'4월 21일',solar:'양',join:'25.08.08'},{no:8,name:'박동현',mbti:'INTP',birthday:'5월9일',solar:'양',join:'26.02.05'}];
+  const desc={INTJ:'전략형 · 분석/계획',INFP:'중재자형 · 공감/가치',ISFP:'모험가형 · 유연/감각',ENFP:'활동가형 · 아이디어/소통',ISTP:'장인형 · 문제해결',INTP:'논리형 · 탐구/분석'};
+  const tbody=document.getElementById('tbody');const search=document.getElementById('search');const mbtiFilter=document.getElementById('mbtiFilter');let chart=null;
+  function birthdayObj(text){let s=String(text).replaceAll(' ','').replace('일','');let p=s.split('월');return {month:Number(p[0]),day:Number(p[1])}}
+  function joinDate(text){let p=String(text).trim().split('.');let yy=Number(p[0]);let year=yy>=70?1900+yy:2000+yy;return new Date(year,Number(p[1])-1,Number(p[2]))}
+  function tenure(text){
+  let start=joinDate(text);
+  let today=new Date();
+
+  let years=today.getFullYear()-start.getFullYear();
+  let months=today.getMonth()-start.getMonth();
+
+  if(today.getDate()<start.getDate()) months--;
+  if(months<0){ years--; months+=12; }
+
+  let y=Math.max(years,0);
+  let m=Math.max(months,0);
+
+  return (y+1)+'년 '+m+'개월';
+}
+  function counts(list){return list.reduce(function(a,e){a[e.mbti]=(a[e.mbti]||0)+1;return a},{})}
+  function nextBirthday(){let now=new Date();let best=null;employees.forEach(function(e){let b=birthdayObj(e.birthday);let d=new Date(now.getFullYear(),b.month-1,b.day);if(d<new Date(now.getFullYear(),now.getMonth(),now.getDate()))d.setFullYear(now.getFullYear()+1);let diff=d-now;if(!best||diff<best.diff)best={emp:e,diff:diff}});return best.emp}
+  Array.from(new Set(employees.map(function(e){return e.mbti}))).sort().forEach(function(m){let o=document.createElement('option');o.value=m;o.textContent=m;mbtiFilter.appendChild(o)});
+  function render(){let q=search.value.trim().toLowerCase();let f=mbtiFilter.value;let list=employees.filter(function(e){return (!f||e.mbti===f)&&Object.values(e).join(' ').toLowerCase().includes(q)});tbody.innerHTML=list.map(function(e){return '<tr><td>'+e.no+'</td><td><b>'+e.name+'</b></td><td><span class="mbti">'+e.mbti+'</span></td><td>'+e.birthday+'</td><td><span class="solar">'+e.solar+'</span></td><td>'+e.join+'</td><td><b>'+tenure(e.join)+'</b></td></tr>'}).join('');document.getElementById('personCards').innerHTML=list.map(function(e){return '<article class="person"><div class="avatar">'+e.name.slice(0,1)+'</div><h3>'+e.name+'</h3><p><b class="mbti">'+e.mbti+'</b></p><p>'+(desc[e.mbti]||'')+'</p><div class="tagrow"><span class="tag">🎂 '+e.birthday+'</span><span class="tag">🏢 '+e.join+'</span><span class="tag">📌 '+tenure(e.join)+'</span></div></article>'}).join('');let c=counts(list);let labels=Object.keys(c);let data=Object.values(c);if(chart)chart.destroy();chart=new Chart(document.getElementById('mbtiChart'),{type:'bar',data:{labels:labels,datasets:[{label:'인원',data:data,borderRadius:10}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});document.getElementById('typeSummary').innerHTML=Object.entries(counts(employees)).sort(function(a,b){return b[1]-a[1]}).map(function(x){return '<div class="type"><small>'+x[0]+'</small><b>'+x[1]+'명</b></div>'}).join('')}
+  window.resetFilter=function(){search.value='';mbtiFilter.value='';render()};search.addEventListener('input',render);mbtiFilter.addEventListener('change',render);render();let topMbti=Object.entries(counts(employees)).sort(function(a,b){return b[1]-a[1]})[0];document.getElementById('kpiTop').textContent=topMbti[0];document.getElementById('kpiTopSub').textContent=topMbti[1]+'명';let b=nextBirthday();document.getElementById('kpiBirthday').textContent=b.name;document.getElementById('kpiBirthdaySub').textContent=b.birthday+' · '+b.mbti;
+});
+</script>
+</body>
+</html>
