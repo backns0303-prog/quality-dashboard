@@ -90,6 +90,116 @@ td{text-align:center}td.text-left{text-align:left}
   .table-wrap{display:none!important}
 }
 
+
+/* 모바일 진행 항목 리스트 강제 표시 보정 */
+@media(max-width:760px){
+  .table-wrap{display:none!important}
+  #mobileProgressTitle{
+    display:block!important;
+    color:#35e0d4!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    margin:8px 0 10px!important;
+  }
+  #mobileList.mobile-list{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    min-height:30px!important;
+  }
+}
+
+
+/* 모바일 진행 항목 강제 노출 */
+@media(max-width:760px){
+  .table-wrap{display:none!important}
+  #mobileProgressTitle.mobile-progress-title{
+    display:block!important;
+    visibility:visible!important;
+    color:#35e0d4!important;
+    font-size:12px!important;
+    font-weight:900!important;
+    margin:10px 0 10px!important;
+  }
+  #mobileList.mobile-list{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    min-height:30px!important;
+  }
+  #mobileList .mobile-card{
+    display:block!important;
+    visibility:visible!important;
+  }
+}
+
+
+.list-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.add-open-btn{
+  background:linear-gradient(135deg,#4ade80,#35e0d4);
+  color:#06101d;
+  border:0;
+  border-radius:14px;
+  padding:10px 14px;
+  font-weight:900;
+  cursor:pointer;
+}
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.62);
+  z-index:50;
+  padding:16px;
+}
+.modal.on{display:flex}
+.modal-box{
+  width:min(760px,100%);
+  background:#0b1829;
+  border:1px solid #28445f;
+  border-radius:22px;
+  padding:20px;
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+.modal-head h3{margin:0;font-size:24px}
+.modal-close{
+  background:#162a44;
+  color:#eef6ff;
+  border:1px solid #28445f;
+}
+.add-form{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.add-submit-btn{
+  width:100%;
+  margin-top:14px;
+  background:linear-gradient(135deg,#4ade80,#35e0d4);
+  color:#06101d;
+  border:0;
+}
+@media(max-width:760px){
+  .list-title-row{align-items:flex-start;flex-direction:column}
+  .add-open-btn{width:100%}
+  .add-form{grid-template-columns:1fr}
+  .modal-box{border-radius:18px;padding:16px}
+}
+
 </style>
 </head>
 <body>
@@ -106,7 +216,7 @@ td{text-align:center}td.text-left{text-align:left}
 </section>
 <section class="section"><div class="tag">SYSTEM FLOW</div><h2>설비 점검 운영 흐름</h2><div class="flow"><div class="step"><b>STEP 01</b><h3>이상 등록</h3><p class="small">증상/점검사항 확인</p></div><div class="step"><b>STEP 02</b><h3>중요도 분류</h3><p class="small">상/중/하 리스크 구분</p></div><div class="step"><b>STEP 03</b><h3>담당자 지정</h3><p class="small">책임자 배정</p></div><div class="step"><b>STEP 04</b><h3>조치 실행</h3><p class="small">일정 기반 점검 진행</p></div><div class="step"><b>STEP 05</b><h3>완료 이력화</h3><p class="small">비고/결과 기록</p></div></div></section>
 <section class="section">
-<div class="tag">ACTION LIST</div><h2>설비 점검 리스트</h2>
+<div class="tag">ACTION LIST</div><div class="list-title-row"><h2>설비 점검 리스트</h2><button class="add-open-btn" onclick="openAddModal()">+ 점검 항목 추가</button></div>
 
 <div class="category-summary">
   <div class="cat-card"><div class="cat-num" id="cEdge">42</div><div class="cat-label">엣지 항목</div></div>
@@ -121,17 +231,144 @@ td{text-align:center}td.text-left{text-align:left}
 <select id="statusQ"><option value="" selected>전체 상태</option><option>대기</option><option>진행</option><option>완료</option></select>
 <button id="resetBtn">초기화</button>
 </div>
-<div id="mobileProgressTitle" class="mobile-progress-title"></div>
-<div id="mobileList" class="mobile-list"></div>
+
+<div id="mobileProgressTitle" class="mobile-progress-title">진행 중인 점검 항목 4건</div>
+<div id="mobileList" class="mobile-list">
+
+<article class="mobile-card mobile-progress-card" data-machine="엣지밴더 #6 (고정축)" data-cat="엣지" data-owner="문태준" data-status="진행">
+  <div class="mobile-top">
+    <div>
+      <div class="mobile-no">진행 No. 1</div>
+      <div class="mobile-machine">엣지밴더 #6 (고정축)</div>
+    </div>
+    <span class="prio high">상</span>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">일정</span><input value="5/1" placeholder="일정 입력"></div>
+    <div><span class="mobile-label">상태 수정</span><select><option >대기</option><option selected>진행</option><option >완료</option></select></div>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">담당자</span><div class="mobile-box">문태준</div></div>
+    <div><span class="mobile-label">구분</span><div class="mobile-box">엣지</div></div>
+  </div>
+  <div class="mobile-box"><span class="mobile-label">점검사항</span>전면 엔드커팅 실린더 교체</div>
+  <div class="mobile-box"><span class="mobile-label">증상</span>엔드커팅 셋팅 틀어짐</div>
+  <div style="margin-top:8px"><span class="mobile-label">비고</span><input value="" placeholder="비고 입력"></div>
+</article>
+
+<article class="mobile-card mobile-progress-card" data-machine="엣지밴더 #6 (이송축)" data-cat="엣지" data-owner="문태준" data-status="진행">
+  <div class="mobile-top">
+    <div>
+      <div class="mobile-no">진행 No. 2</div>
+      <div class="mobile-machine">엣지밴더 #6 (이송축)</div>
+    </div>
+    <span class="prio high">상</span>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">일정</span><input value="5/1" placeholder="일정 입력"></div>
+    <div><span class="mobile-label">상태 수정</span><select><option >대기</option><option selected>진행</option><option >완료</option></select></div>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">담당자</span><div class="mobile-box">문태준</div></div>
+    <div><span class="mobile-label">구분</span><div class="mobile-box">엣지</div></div>
+  </div>
+  <div class="mobile-box"><span class="mobile-label">점검사항</span>사이드 트레이서 오버홀</div>
+  <div class="mobile-box"><span class="mobile-label">증상</span>엣지 스크랩 제거 미흡</div>
+  <div style="margin-top:8px"><span class="mobile-label">비고</span><input value="" placeholder="비고 입력"></div>
+</article>
+
+<article class="mobile-card mobile-progress-card" data-machine="보링 #19" data-cat="보링" data-owner="김석순" data-status="진행">
+  <div class="mobile-top">
+    <div>
+      <div class="mobile-no">진행 No. 3</div>
+      <div class="mobile-machine">보링 #19</div>
+    </div>
+    <span class="prio high">상</span>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">일정</span><input value="5/2" placeholder="일정 입력"></div>
+    <div><span class="mobile-label">상태 수정</span><select><option >대기</option><option selected>진행</option><option >완료</option></select></div>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">담당자</span><div class="mobile-box">김석순</div></div>
+    <div><span class="mobile-label">구분</span><div class="mobile-box">보링</div></div>
+  </div>
+  <div class="mobile-box"><span class="mobile-label">점검사항</span>루타 스핀들 영점 조정</div>
+  <div class="mobile-box"><span class="mobile-label">증상</span>전면 루타 사용 불가</div>
+  <div style="margin-top:8px"><span class="mobile-label">비고</span><input value="" placeholder="비고 입력"></div>
+</article>
+
+<article class="mobile-card mobile-progress-card" data-machine="보링 #19" data-cat="보링" data-owner="김석순" data-status="진행">
+  <div class="mobile-top">
+    <div>
+      <div class="mobile-no">진행 No. 4</div>
+      <div class="mobile-machine">보링 #19</div>
+    </div>
+    <span class="prio high">상</span>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">일정</span><input value="5/2" placeholder="일정 입력"></div>
+    <div><span class="mobile-label">상태 수정</span><select><option >대기</option><option selected>진행</option><option >완료</option></select></div>
+  </div>
+  <div class="mobile-grid">
+    <div><span class="mobile-label">담당자</span><div class="mobile-box">김석순</div></div>
+    <div><span class="mobile-label">구분</span><div class="mobile-box">보링</div></div>
+  </div>
+  <div class="mobile-box"><span class="mobile-label">점검사항</span>벨트 상승/하강 실린더 교체</div>
+  <div class="mobile-box"><span class="mobile-label">증상</span>벨트 상승 작동 불량</div>
+  <div style="margin-top:8px"><span class="mobile-label">비고</span><input value="" placeholder="비고 입력"></div>
+</article>
+
+</div>
+
 <div class="table-wrap"><table><thead><tr><th>No</th><th>구분</th><th>설비명</th><th>점검사항</th><th>증상</th><th>중요도</th><th>담당자</th><th>일정</th><th>상태</th><th>비고</th></tr></thead><tbody id="tbody"></tbody></table></div>
 </section>
 <section class="section"><div class="tag">INSPECTION HISTORY</div><h2>설비 점검 이력관리</h2><div class="history-note">완료 처리한 항목은 아래 이력에 표시되며, 비고의 “복원” 버튼으로 다시 진행 리스트로 되돌릴 수 있습니다.</div><div id="historyList" class="history-table-wrap"></div></section>
+
+<div id="addModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>점검 항목 추가</h3>
+      <button class="modal-close" onclick="closeAddModal()">닫기</button>
+    </div>
+    <div class="add-form">
+      <select id="newCat">
+        <option value="엣지">엣지</option>
+        <option value="보링">보링</option>
+        <option value="기타">기타</option>
+      </select>
+      <input id="newMachine" placeholder="설비명">
+      <input id="newCheck" placeholder="점검사항">
+      <input id="newSymptom" placeholder="증상">
+      <select id="newPriority">
+        <option value="상">상</option>
+        <option value="중">중</option>
+        <option value="하">하</option>
+      </select>
+      <select id="newOwner">
+        <option value="문태준">문태준</option>
+        <option value="김석순">김석순</option>
+        <option value="손영필">손영필</option>
+        <option value="백남수">백남수</option>
+      </select>
+      <input id="newDate" placeholder="일정 예: 5/3">
+      <select id="newStatus">
+        <option value="대기">대기</option>
+        <option value="진행" selected>진행</option>
+        <option value="완료">완료</option>
+      </select>
+      <input id="newMemo" placeholder="비고">
+    </div>
+    <button class="add-submit-btn" onclick="addInspectionItem()">추가하기</button>
+  </div>
+</div>
+
 <div class="footer">CHUNGJU Equipment Inspection Dashboard · HTML single file</div>
 </div>
 <script id="inspection-data" type="application/json">[{"cat": "엣지", "machine": "엣지밴더 #1", "check": "상부트랙 가압롤러 교체", "symptom": "부러짐", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "센서 커넥터 교체", "symptom": "접촉불량으로 에러 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "스프라켓, 체인, 패드 교체", "symptom": "엔드커팅, 코너워킹 에러 원인 (엔지니어 내방시 권장 사항)", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "엣지 체인저 점검", "symptom": "엣지 짧음 / 미접착 / 밀림 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "체인트랙 인버터 교체", "symptom": "인버터 에러 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "트랙 상부 높이조절 엔코더 교체", "symptom": "엔코더 에러 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "글루롤러 전/후 실린더 교체", "symptom": "작동 불량 (수동으로 작동 중)", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "2차 트리밍 하부 실린더 교체", "symptom": "트리밍 마감 불량 발생 (실린더 누압)", "priority": "하", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #1", "check": "AT 전/후진 실린더 교체", "symptom": "4면 접착시 엣지 터짐 (빈도 낮음)", "priority": "하", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "상부트랙 가압롤러 교체", "symptom": "부러짐", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "센서 커넥터 교체", "symptom": "접촉불량으로 에러 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "스프라켓, 체인, 패드 교체", "symptom": "엔드커팅, 코너워킹 에러 원인 (엔지니어 내방시 권장 사항)", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "엣지 체인저 점검", "symptom": "엣지 짧음 / 미접착 / 밀림 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "글루롤러 전/후 실린더 교체", "symptom": "작동 불량 (수동으로 작동 중)", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "프리멜터 오버홀", "symptom": "본드 공급 불량 (틈으로 샘)", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "R스크래퍼 오버홀", "symptom": "셋팅 불가", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #2", "check": "2차 트리밍 하부 실린더 교체", "symptom": "트리밍 마감 불량 발생 (실린더 누압)", "priority": "하", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #3", "check": "엔드커팅 후면 45° 각도조절 정비", "symptom": "유격 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #3", "check": "글루롤러 체인저 클램프 오버홀", "symptom": "글루롤러 클램프 고착", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #3", "check": "상부트랙 가압롤러 교체", "symptom": "점검", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #3", "check": "중간 컨베어 UC베어링 및 환봉 교체", "symptom": "베어링 기능 저하 / 환봉 마모", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #4", "check": "글루롤러 체인저 클램프 오버홀", "symptom": "글루롤러 클램프 고착", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #4", "check": "상부트랙 가압롤러 교체", "symptom": "점검", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #5", "check": "엣지 체인저 점검 (#17, #22)", "symptom": "엣지 짧음 / 미접착 / 밀림 발생", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "센서 커넥터 교체", "symptom": "접촉불량으로 에러 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "스프라켓, 체인, 패드 교체", "symptom": "엔드커팅, 코너워킹 에러 원인 (엔지니어 내방시 권장 사항)", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "엣지 체인저 점검", "symptom": "엣지 짧음 / 미접착 / 밀림 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "전면 엔드커팅 실린더 교체", "symptom": "엔드커팅 셋팅 틀어짐", "priority": "상", "owner": "문태준", "date": "5/1", "status": "진행", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "후면 엔드커팅 실린더 교체", "symptom": "엔드커팅 셋팅 틀어짐", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "글루롤러 전/후 실린더 교체", "symptom": "작동 불량 (수동으로 작동 중)", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "프리멜터 오버홀", "symptom": "본드 공급 불량 (틈으로 샘)", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (고정축)", "check": "2차 트리밍 하부 실린더 교체", "symptom": "트리밍 마감 불량 발생 (실린더 누압)", "priority": "하", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "사이드 트레이서 오버홀", "symptom": "엣지 스크랩 제거 미흡", "priority": "상", "owner": "문태준", "date": "5/1", "status": "진행", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "센서 커넥터 교체", "symptom": "접촉불량으로 에러 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "스프라켓, 체인, 패드 교체", "symptom": "엔드커팅, 코너워킹 에러 원인 (엔지니어 내방시 권장 사항)", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "엣지 체인저 점검", "symptom": "엣지 짧음 / 미접착 / 밀림 발생", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "전면 엔드커팅 실린더 교체", "symptom": "엔드커팅 셋팅 틀어짐", "priority": "상", "owner": "문태준", "date": "5/9", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "후면 엔드커팅 실린더 교체", "symptom": "엔드커팅 셋팅 틀어짐", "priority": "상", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "글루롤러 전/후 실린더 교체", "symptom": "작동 불량 (수동으로 작동 중)", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "코너워킹 엔코더/모터 교체", "symptom": "영점 틀어짐", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "호거쏘 교체", "symptom": "교체주기 초과로 현재 미사용 중", "priority": "중", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "엣지", "machine": "엣지밴더 #6 (이송축)", "check": "2차 트리밍 하부 실린더 교체", "symptom": "트리밍 마감 불량 발생 (실린더 누압)", "priority": "하", "owner": "문태준", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #1 (수직)", "check": "루타 스핀들 모터 교체", "symptom": "루타 가공시 간헐적 에러 발생", "priority": "중", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #2 (수직)", "check": "Φ35 스핀들 교체", "symptom": "Φ35 가공 불가", "priority": "상", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #3 (수직)", "check": "보링 헤드 오버홀", "symptom": "일부 스핀들 작동 불가", "priority": "상", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #3 (포인트)", "check": "커터 점검 (세부 원인 파악 필요)", "symptom": "커터 가공 불가", "priority": "상", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #19", "check": "루타 스핀들 영점 조정", "symptom": "전면 루타 사용 불가", "priority": "상", "owner": "김석순", "date": "5/2", "status": "진행", "memo": ""}, {"cat": "보링", "machine": "보링 #19", "check": "벨트 상승/하강 실린더 교체", "symptom": "벨트 상승 작동 불량", "priority": "상", "owner": "김석순", "date": "5/2", "status": "진행", "memo": ""}, {"cat": "보링", "machine": "보링 #19", "check": "사이드 스핀들 회전 에러 (세부원인 파악 필요)", "symptom": "제품 1개 투입시 사이드블럭 작동 안함", "priority": "중", "owner": "손영필", "date": "", "status": "대기", "memo": "업체 점검"}, {"cat": "보링", "machine": "보링 #19~24", "check": "진공 솔밸브 및 펌프 점검", "symptom": "진공 성능 저하", "priority": "중", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #19~24", "check": "테이블 점검", "symptom": "씰링/패킹 탈락 및 컵 파손", "priority": "하", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #20", "check": "사이드 스핀들 에러 (세부원인 파악 필요)", "symptom": "특정 제품 가공시 사이드블럭간 충돌 에러 발생", "priority": "상", "owner": "손영필", "date": "", "status": "대기", "memo": "업체 점검"}, {"cat": "보링", "machine": "보링 #21", "check": "루타 스핀들 인버터 교체", "symptom": "작동 속도 느림", "priority": "중", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #22", "check": "루타 스핀들 휨", "symptom": "사용 불가", "priority": "상", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #22", "check": "Φ10 관통 스핀들 점검", "symptom": "Φ10 관통가공시 후면 터짐", "priority": "중", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #23", "check": "보링 헤드 오버홀", "symptom": "임시 조치상태 (고장 우려)", "priority": "상", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "보링", "machine": "보링 #26 (양면)", "check": "테이블 오일 누유 (세부원인 파악 필요)", "symptom": "제품 오염 유발", "priority": "중", "owner": "손영필", "date": "", "status": "대기", "memo": "생기 점검"}, {"cat": "보링", "machine": "보링 #27 (양면)", "check": "테이블 오일 누유 (세부원인 파악 필요)", "symptom": "제품 오염 유발", "priority": "중", "owner": "손영필", "date": "", "status": "대기", "memo": "생기 점검"}, {"cat": "보링", "machine": "보링 #27 (양면)", "check": "하부 Φ3 스핀들 작동 불량 (세부 원인 파악 필요)", "symptom": "하부 Φ3 깊이 모자름", "priority": "중", "owner": "김석순", "date": "", "status": "대기", "memo": ""}, {"cat": "기타", "machine": "자동화 롤러 컨베어", "check": "롤러 마감 스웨이드 교체", "symptom": "제품 눌림 스크래치 발생", "priority": "하", "owner": "백남수", "date": "", "status": "대기", "memo": "원단 발주"}]</script>
 <script>
 const DEFAULT_DATA = JSON.parse(document.getElementById('inspection-data').textContent);
-const STORAGE_KEY = 'cj_inspection_kpi_history_working_v2_plan_progress_complete';
+const STORAGE_KEY = 'cj_inspection_mobile_progress_fixed_v3';
 let state = { rows: JSON.parse(JSON.stringify(DEFAULT_DATA)), history: [] };
 
 try {
@@ -164,6 +401,16 @@ function updateKPI() {
   if (cEtc) cEtc.textContent = state.rows.filter(r => r.cat === '기타').length;
 }
 
+
+function normalizeProgressItems() {
+  state.rows.forEach(r => {
+    const d = String(r.date || '').trim();
+    if (d === '5/1' || d === '5/2') {
+      r.status = '진행';
+    }
+  });
+}
+
 function filteredRows() {
   const q = document.getElementById('q').value.trim().toLowerCase();
   const machine = document.getElementById('machineQ').value;
@@ -182,28 +429,34 @@ function filteredRows() {
 }
 
 function renderList() {
-  let rows = filteredRows();
+  const rows = filteredRows();
 
-  document.getElementById('tbody').innerHTML = rows.map((r,idx)=>`
-    <tr>
-      <td>${r.no || idx+1}</td>
-      <td>${esc(r.cat)}</td>
-      <td>${esc(r.machine)}</td>
-      <td class="text-left">${esc(r.check)}</td>
-      <td class="text-left">${esc(r.symptom)}</td>
-      <td><span class="prio ${prioClass(r.priority)}">${esc(r.priority)}</span></td>
-      <td>${esc(r.owner)}</td>
-      <td><input value="${esc(r.date)}" placeholder="일정 입력" onchange="updateField(${r._i},'date',this.value)"></td>
-      <td><select onchange="changeStatus(${r._i},this.value)">${statusOptions(r.status)}</select></td>
-      <td><input value="${esc(r.memo)}" placeholder="비고 입력" onchange="updateField(${r._i},'memo',this.value)"></td>
-    </tr>`).join('');
+  const tbody = document.getElementById('tbody');
+  if (tbody) {
+    tbody.innerHTML = rows.map((r,idx)=>`
+      <tr>
+        <td>${r.no || idx+1}</td>
+        <td>${esc(r.cat)}</td>
+        <td>${esc(r.machine)}</td>
+        <td class="text-left">${esc(r.check)}</td>
+        <td class="text-left">${esc(r.symptom)}</td>
+        <td><span class="prio ${prioClass(r.priority)}">${esc(r.priority)}</span></td>
+        <td>${esc(r.owner)}</td>
+        <td><input value="${esc(r.date)}" placeholder="일정 입력" onchange="updateField(${r._i},'date',this.value)"></td>
+        <td><select onchange="changeStatus(${r._i},this.value)">${statusOptions(r.status)}</select></td>
+        <td><input value="${esc(r.memo)}" placeholder="비고 입력" onchange="updateField(${r._i},'memo',this.value)"></td>
+      </tr>`).join('');
+  }
 
-  // 모바일에서는 진행 중인 항목만 카드로 표시
-  let mobileRows = state.rows.map((r,i)=>({...r,_i:i})).filter(r => r.status === '진행');
+  // 모바일 전용: 검색/필터 조건 적용 후 상태가 '진행'인 항목만 표시
+  const mobileRows = filteredRows().filter(r => r.status === '진행');
 
   const title = document.getElementById('mobileProgressTitle');
   const list = document.getElementById('mobileList');
-  if (title) title.textContent = '진행 중인 점검 항목 ' + mobileRows.length + '건';
+
+  if (title) {
+    title.textContent = '진행 중인 점검 항목 ' + mobileRows.length + '건';
+  }
 
   if (list) {
     list.innerHTML = mobileRows.length ? mobileRows.map((r,idx)=>`
@@ -228,8 +481,14 @@ function renderList() {
         </div>
 
         <div class="mobile-grid">
-          <div><span class="mobile-label">담당자</span><div class="mobile-box">${esc(r.owner)}</div></div>
-          <div><span class="mobile-label">구분</span><div class="mobile-box">${esc(r.cat)}</div></div>
+          <div>
+            <span class="mobile-label">담당자</span>
+            <div class="mobile-box">${esc(r.owner)}</div>
+          </div>
+          <div>
+            <span class="mobile-label">구분</span>
+            <div class="mobile-box">${esc(r.cat)}</div>
+          </div>
         </div>
 
         <div class="mobile-box"><span class="mobile-label">점검사항</span>${esc(r.check)}</div>
@@ -242,6 +501,7 @@ function renderList() {
       </article>`).join('') : '<div class="empty">진행 중인 점검 항목이 없습니다.</div>';
   }
 }
+
 
 function renderHistory() {
   const hist = state.history;
@@ -300,6 +560,7 @@ function resetFilters() {
 }
 
 function render() {
+  normalizeProgressItems();
   renderList();
   renderHistory();
   updateKPI();
@@ -313,4 +574,110 @@ document.getElementById('resetBtn').addEventListener('click', resetFilters);
 window.addEventListener('resize', render);
 render();
 </script>
+
+<script>
+(function(){
+  function norm(v){return String(v||'').toLowerCase().trim();}
+  function applyMobileCardFilter(){
+    const q = norm(document.getElementById('q')?.value);
+    const machine = document.getElementById('machineQ')?.value || '';
+    const cat = document.getElementById('catQ')?.value || '';
+    const owner = document.getElementById('ownerQ')?.value || '';
+    const status = document.getElementById('statusQ')?.value || '';
+    const cards = Array.from(document.querySelectorAll('.mobile-progress-card'));
+    let count = 0;
+    cards.forEach(card => {
+      const ok = (!q || norm(card.textContent).includes(q)) &&
+        (!machine || card.dataset.machine === machine) &&
+        (!cat || card.dataset.cat === cat) &&
+        (!owner || card.dataset.owner === owner) &&
+        (!status || card.dataset.status === status);
+      card.style.display = ok ? 'block' : 'none';
+      if(ok) count++;
+    });
+    const title = document.getElementById('mobileProgressTitle');
+    if(title) title.textContent = '진행 중인 점검 항목 ' + count + '건';
+  }
+  ['q','machineQ','catQ','ownerQ','statusQ'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.addEventListener('input',applyMobileCardFilter);el.addEventListener('change',applyMobileCardFilter);}
+  });
+  const reset=document.getElementById('resetBtn');
+  if(reset){reset.addEventListener('click',()=>setTimeout(applyMobileCardFilter,0));}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', applyMobileCardFilter);
+  else applyMobileCardFilter();
+})();
+</script>
+
+
+<script>
+(function(){
+  function getAppState(){
+    if (typeof state !== 'undefined' && state && Array.isArray(state.rows)) return state;
+    window.state = window.state || { rows: [], history: [] };
+    return window.state;
+  }
+
+  window.openAddModal = function(){
+    const m = document.getElementById('addModal');
+    if(m) m.classList.add('on');
+  };
+
+  window.closeAddModal = function(){
+    const m = document.getElementById('addModal');
+    if(m) m.classList.remove('on');
+  };
+
+  window.addInspectionItem = function(){
+    const cat = document.getElementById('newCat').value;
+    const machine = document.getElementById('newMachine').value.trim();
+    const check = document.getElementById('newCheck').value.trim();
+    const symptom = document.getElementById('newSymptom').value.trim() || '-';
+    const priority = document.getElementById('newPriority').value;
+    const owner = document.getElementById('newOwner').value;
+    const date = document.getElementById('newDate').value.trim();
+    const status = document.getElementById('newStatus').value;
+    const memo = document.getElementById('newMemo').value.trim();
+
+    if(!machine || !check){
+      alert('설비명과 점검사항은 필수입니다.');
+      return;
+    }
+
+    const s = getAppState();
+    const maxNo = Math.max(0, ...s.rows.map(r => Number(r.no || 0)), ...(s.history || []).map(r => Number(r.no || 0)));
+
+    const item = {
+      no: maxNo + 1,
+      cat,
+      machine,
+      check,
+      symptom,
+      priority,
+      owner,
+      date,
+      status,
+      memo
+    };
+
+    if(status === '완료'){
+      s.history = s.history || [];
+      s.history.unshift({...item, completedAt:new Date().toLocaleString('ko-KR')});
+    } else {
+      s.rows.unshift(item);
+    }
+
+    if (typeof save === 'function') save();
+    if (typeof render === 'function') render();
+
+    ['newMachine','newCheck','newSymptom','newDate','newMemo'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+
+    closeAddModal();
+  };
+})();
+</script>
+
 </body></html>
