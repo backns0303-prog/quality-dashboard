@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>충주공장 수출건 포장강화 현황</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:'Malgun Gothic',Arial,sans-serif;background:#f1f5f9;color:#1e293b}.page{max-width:1500px;margin:0 auto;padding:24px}.card{background:#fff;border-radius:24px;padding:28px;margin-bottom:24px;box-shadow:0 10px 25px rgba(15,23,42,.08)}.header{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}h1{margin:0;font-size:34px;font-weight:900}h2{margin:0 0 22px;font-size:24px;font-weight:900}.subtitle{margin-top:8px;color:#64748b;font-weight:700}.btn-area{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:12px;padding:11px 16px;font-weight:900;cursor:pointer;background:#0f172a;color:#fff}button.secondary{background:#e2e8f0;color:#0f172a}.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}.kpi{border-radius:18px;padding:16px;text-align:center;min-height:96px;display:flex;flex-direction:column;justify-content:center}.kpi .label{color:#64748b;font-size:14px;font-weight:900}.kpi .value{margin-top:6px;font-size:32px;font-weight:900;color:#0f172a}.gray{background:#f1f5f9}.blue{background:#eff6ff}.green{background:#ecfdf5}.purple{background:#f5f3ff}.orange{background:#fff7ed}.table-wrap{overflow-x:auto;border-radius:18px;border:1px solid #e2e8f0}table{width:100%;min-width:1050px;border-collapse:collapse;table-layout:fixed;font-size:14px}th{height:48px;background:#1e293b;color:#fff;border-left:1px solid #475569;padding:12px;text-align:center;white-space:nowrap}td{padding:14px;text-align:center;font-weight:900;border-bottom:1px solid #e2e8f0}td:first-child{text-align:center}tbody tr:nth-child(odd){background:#eff6ff}tbody tr:nth-child(even){background:#f8fafc}tr.total{background:#fff7ed!important}tr.shipment{background:#ecfdf5!important}.note{margin-top:14px;color:#64748b;font-size:14px;font-weight:800}.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.chart-card{border:1px solid #e2e8f0;border-radius:18px;padding:18px;background:#fff;height:340px}.chart-title{margin-bottom:14px;font-weight:900;color:#334155}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.summary-box{border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;padding:16px}.summary-box .small{color:#64748b;font-size:13px;font-weight:900}.summary-box .big{margin-top:6px;color:#0f172a;font-size:26px;font-weight:900}.detail-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.detail-item{border-radius:16px;background:#f8fafc;border:1px solid #e2e8f0;padding:16px}.detail-item b{display:block;margin-bottom:6px;color:#0f172a;font-size:16px}.detail-item span{color:#475569;font-weight:700;line-height:1.45}@media(max-width:900px){.page{padding:14px}.card{padding:18px;border-radius:18px}h1{font-size:25px}h2{font-size:20px}.kpis,.chart-grid,.summary-grid,.detail-list{grid-template-columns:1fr}table{font-size:13px}}@media print{body{background:#fff}.page{max-width:none;padding:0}.card{box-shadow:none;border:1px solid #e2e8f0;page-break-inside:avoid}button{display:none}}
+  
+.photo-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:24px;
+  width:100%;
+}
+.photo-box{
+  background:#f8fafc;
+  border:1px solid #cbd5e1;
+  border-radius:18px;
+  padding:14px;
+  width:100%;
+}
+.photo-input{
+  display:none;
+}
+.photo-placeholder{
+  height:300px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#e2e8f0;
+  border-radius:12px;
+  font-size:20px;
+  font-weight:700;
+  color:#475569;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+  transition:0.2s;
+}
+.photo-placeholder:hover{
+  background:#cbd5e1;
+}
+.photo-placeholder img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.photo-placeholder span{
+  pointer-events:none;
+}
+@media(max-width:900px){
+  .photo-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+
+.ve-card{
+  margin-top:24px;
+  background:#f8fafc;
+  border:1px solid #cbd5e1;
+  border-radius:18px;
+  padding:22px 26px;
+}
+.ve-card h3{
+  margin:0 0 14px;
+  font-size:22px;
+  font-weight:900;
+  color:#0f172a;
+}
+.ve-item{
+  font-size:19px;
+  font-weight:800;
+  color:#1e293b;
+  line-height:1.6;
+}
+
+</style>
+</head>
+<body>
+  <div class="page">
+    <section class="card header"><div><h1>충주공장 수출건 포장강화 현황</h1></div></section>
+    <section class="card" style="width:100%;"><h2>1. 북미건 월별 포장강화 현황</h2><div class="kpis" id="kpiArea"></div><div id="packingTable"></div><div class="note">※ 포장강화 적용일 : 26년 2월 25일부터 적용</div></section>
+    
+
+
+    <section class="card">
+  <h2>포장강화 사진</h2>
+  <div class="photo-grid">
+    <div class="photo-box">
+      <input type="file" accept="image/*" id="photoInput1" class="photo-input" onchange="previewPhoto(event, 1)">
+      <label for="photoInput1" class="photo-placeholder" id="photoBox1">
+        <span>사진 추가</span>
+      </label>
+    </div>
+    <div class="photo-box">
+      <input type="file" accept="image/*" id="photoInput2" class="photo-input" onchange="previewPhoto(event, 2)">
+      <label for="photoInput2" class="photo-placeholder" id="photoBox2">
+        <span>사진 추가</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="ve-card">
+    <h3>포장재 VE 항목</h3>
+    <div class="ve-item">- 토이론 두께 및 보양 범위 재검토</div>
+  </div>
+</section>
+<section class="card"><h2>2. 수출건 월별 출고 현황</h2><div id="exportTable"></div></section>
+    <section class="card">
+  <h2>수출 전체 포장강화 점검사항</h2>
+  <div class="detail-list">
+    <div class="detail-item"><b>제품 및 포장재 보관 공간</b><span>수출 전체 포장강화 확대 시 제품 대기 공간 및 포장재 보관 공간 확보 필요</span></div>
+    <div class="detail-item"><b>인원 및 작업대 추가</b><span>포장 작업량 증가에 따른 작업 인원 및 포장 작업대 추가 검토 필요</span></div>
+    <div class="detail-item"><b>피더 및 검사원 추가</b><span>포장 전 제품 공급 대응과 출하 전 포장 상태 확인을 위한 피더 및 검사원 추가 필요</span></div>
+    <div class="detail-item"><b>레이아웃 변경</b><span>제품 이동 동선, 포장 구역, 검사 구역, 보관 구역을 고려한 현장 레이아웃 재정비 필요</span></div>
+  </div>
+</section>
+<section class="card"><h2>3. 표준구분 월별 출고 현황</h2><div id="standardTable"></div></section>
+    
+  </div>
+  <script>
+    const months=['1월','2월','3월','4월'];
+    const packingRows=[{name:'충주1',values:[0,83,340,941]},{name:'충주2',values:[0,11,103,35]},{name:'목재상품',values:[0,0,0,0]},{name:'VN',values:[0,15,14,168]}];
+    const shipmentValues=[50,215,457,1144];
+    const exportRows=[{name:'북미건',values:[50,215,457,1144]},{name:'그 외',values:[7816,7533,4007,2543]}];
+    const standardRows=[{name:'표준품',values:[4058,2501,2899,2865]},{name:'주문품',values:[3808,5247,1565,822]}];
+    const weeklyData=[{week:'1주차',value:276},{week:'2주차',value:312},{week:'3주차',value:374},{week:'4주차',value:341}];
+    const sum=v=>v.reduce((t,n)=>t+n,0),avg=v=>Math.round(sum(v)/v.length),percent=(v,t)=>t===0?'0.0%':`${((v/t)*100).toFixed(1)}%`,money=v=>Number(v).toLocaleString();
+    const packingMonthlyTotal=months.map((_,i)=>sum(packingRows.map(r=>r.values[i]))),packingTotal=sum(packingMonthlyTotal);
+    const exportMonthlyTotal=months.map((_,i)=>sum(exportRows.map(r=>r.values[i]))),exportTotal=sum(exportMonthlyTotal);
+    const standardMonthlyTotal=[7866,7748,4464,3687],standardTotal=sum(standardMonthlyTotal);
+    function renderKpis(){const kpiTarget=document.getElementById('kpiArea'); if(!kpiTarget) return; const k=[['1월 달성율','0%','gray'],['2월 달성율','51%','blue'],['3월 달성율','100%','green'],['4월 달성율','100%','purple'],['누적 달성율','91.6%','orange']];kpiTarget.innerHTML=k.map(([l,v,c])=>`<div class="kpi ${c}"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('')}
+    function renderTable(id,rows,totalLabel,totalValues,totalBase,totalPercent='100.0%',extra=''){const target=document.getElementById(id); if(!target) return; target.innerHTML=`<div class="table-wrap"><table><thead><tr><th>구분</th>${months.map(m=>`<th>${m}</th>`).join('')}<th>합계</th><th>월평균</th><th>비중</th></tr></thead><tbody>${rows.map(r=>{const rt=sum(r.values);return `<tr><td>${r.name}</td>${r.values.map(v=>`<td>${money(v)}</td>`).join('')}<td>${money(rt)}</td><td>${money(avg(r.values))}</td><td>${percent(rt,totalBase)}</td></tr>`}).join('')}<tr class="total"><td>${totalLabel}</td>${totalValues.map(v=>`<td>${money(v)}</td>`).join('')}<td>${money(sum(totalValues))}</td><td>${money(avg(totalValues))}</td><td>${totalPercent}</td></tr>${extra}</tbody></table></div>`}
+    function renderSummary(){const items=[['포장강화 누적',`${money(packingTotal)}건`],['북미건 누적 출고',`${money(sum(exportRows[0].values))}건`],['4월 포장강화',`${money(packingMonthlyTotal[3])}건`],['4월 적용 비율',`${percent(packingMonthlyTotal[3],shipmentValues[3])}`]];const summaryTarget=document.getElementById('summaryArea'); if(summaryTarget) summaryTarget.innerHTML=items.map(([l,v])=>`<div class="summary-box"><div class="small">${l}</div><div class="big">${v}</div></div>`).join('')}
+    function makeChart(id,type,labels,datasets,opt={}){const canvas=document.getElementById(id); if(!canvas) return; new Chart(canvas,{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:type==='pie'||type==='doughnut'?{}:{y:{beginAtZero:true}},...opt}})}
+    function renderCharts(){makeChart('packingChart','bar',months,[{label:'포장강화 합계',data:packingMonthlyTotal}]);makeChart('shipmentChart','line',months,[{label:'출고량',data:shipmentValues},{label:'포장강화',data:packingMonthlyTotal}]);makeChart('exportChart','bar',months,[{label:'북미건',data:exportRows[0].values},{label:'그 외',data:exportRows[1].values}]);makeChart('exportRatioChart','line',months,[{label:'북미건 비중(%)',data:months.map((_,i)=>Number(((exportRows[0].values[i]/exportMonthlyTotal[i])*100).toFixed(1)))}]);makeChart('standardChart','bar',months,[{label:'표준품',data:standardRows[0].values},{label:'주문품',data:standardRows[1].values}]);makeChart('weeklyChart','bar',weeklyData.map(x=>x.week),[{label:'주별 관리 건수',data:weeklyData.map(x=>x.value)}])}
+    renderKpis();
+    renderTable('packingTable',packingRows,'포장강화 합계',packingMonthlyTotal,packingTotal,'100.0%',`<tr class="shipment"><td>출고량</td>${shipmentValues.map(v=>`<td>${money(v)}</td>`).join('')}<td>${money(sum(shipmentValues))}</td><td>${money(avg(shipmentValues))}</td><td>-</td></tr>`);
+    renderTable('exportTable',exportRows,'총 합계',exportMonthlyTotal,exportTotal,'100.0%');
+    renderTable('standardTable',standardRows,'총 합계',standardMonthlyTotal,standardTotal,'100.0%');
+    renderSummary();renderCharts();
+  </script>
+
+
+
+
+
+
+<script>
+  function previewPhoto(event, index) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const box = document.getElementById('photoBox' + index);
+      if (!box) return;
+      box.innerHTML = '<img src="' + e.target.result + '" alt="포장강화 사진 ' + index + '">';
+      localStorage.setItem('packagingPhoto' + index, e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function loadSavedPhotos() {
+    for (let i = 1; i <= 4; i++) {
+      const saved = localStorage.getItem('packagingPhoto' + i);
+      if (saved) {
+        const box = document.getElementById('photoBox' + i);
+        if (box) {
+          box.innerHTML = '<img src="' + saved + '" alt="포장강화 사진 ' + i + '">';
+        }
+      }
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', loadSavedPhotos);
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
